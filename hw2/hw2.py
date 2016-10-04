@@ -52,13 +52,24 @@ def showEntries():
     return render_template('showEntries.html', entries=entries)
 
 @app.route('/add', methods=['POST'])
-def add_entry():
+def addEntry():
     if not session.get('logged_in'):
         abort(401)
 
     db = getDB()
     db.execute('insert into entries (name) values (?)',
                [request.form['name'],])
+    db.commit()
+    flash('Post successful')
+    return redirect(url_for('showEntries'))
+
+@app.route('/clear', methods=['POST'])
+def clearEntries():
+    if not session.get('logged_in'):
+        abort(401)
+
+    db = getDB()
+    db.execute('delete from entries')
     db.commit()
     flash('Post successful')
     return redirect(url_for('showEntries'))
